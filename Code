@@ -1,0 +1,457 @@
+#include<stdio.h>
+#include<dos.h>
+#include<conio.h>
+#include<fstream.h>
+#include<stdlib.h>
+#include<string.h>
+#include<iomanip.h>
+void mainmenu();
+void patient();
+void border();
+class doctors
+{
+    private:
+        int doctor_id;
+        char name[20];
+        char blood_group[5];
+        char phn[15];
+        char address[150];
+    public:
+        void doctordata();
+        void showdata();
+        int getdoctorid()
+        {
+            return doctor_id;
+        }
+};
+long autogetdoctorid()
+{
+    int n=1000;
+    fstream f("doctor.dat",ios::binary|ios::in);
+    doctors d;
+    while(f.read((char*)&d,sizeof(d)))
+        n = d.getdoctorid();
+    f.close();
+    return n;
+}
+
+void doctors::doctordata()
+{
+    doctor_id= autogetdoctorid()+1;
+    cout<<"\nDoctor ID : "<<doctor_id;
+    cout<<"\nDoctor Name : ";      gets(name);
+    cout<<"\nDoctor's Blood Group : ";    cin>>blood_group;
+    cout<<"\nDoctor's Phone Number : ";   gets(phn);
+    cout<<"\nDoctor's Address:";     gets(address);
+}
+void doctors::showdata()
+{
+    cout<<"\nDoctor ID\t: "<<getdoctorid();
+    cout<<"\nDoctor Name\t: "<<name;
+    cout<<"\nBlood Group\t: "<<blood_group;
+    cout<<"\nDoctor's Phone No.\t: "<<phn;
+    cout<<"\nDoctor's Address:"<<address;
+    cout<<endl;
+}
+void new_doctor()
+{
+    fstream f;
+    f.open("doctor.dat",ios::out|ios::app|ios::binary);
+    doctors D;
+    D.doctordata();
+    f.write((char *)&D,sizeof(D));
+    f.close();
+}
+void display_doctor()
+{
+    fstream f;
+    f.open("doctor.dat",ios::in|ios::binary);
+    doctors D;
+
+    while(f.read((char *)&D,sizeof(D)))
+          D.showdata();
+    f.close();
+}
+
+void modify_doctor()
+{
+    int found=0;
+            long modifyid;
+            cout<<"\n\nEnter Id of the Doctor to be modified:";
+            cin>>modifyid;
+            fstream f6("doctor.dat",ios::in|ios::out|ios::binary);
+             doctors D;
+            while(f6.read((char*)&D, sizeof(D)))
+            {
+                if(modifyid==D.getdoctorid())
+                {
+                    cout<<"Enter New Record.."<<endl;
+                    D.doctordata();
+                    f6.seekp(f6.tellg() - sizeof(D));
+                    f6.write((char*)&D, sizeof(D));
+                    found=1;
+                }
+            }
+            if(found==0)
+                cout<<"No such record found.";
+            f6.close();
+            getch();
+
+}
+void search_doctor()
+{
+            int found1=0;
+            long searchid;
+            cout<<"Enter Id of the Doctor to be searched:";
+            cin>>searchid;
+
+            
+
+fstream f7("doctor.dat",ios::in|ios::out|ios::app|ios::binary);
+                        doctors D;
+            while(f7.read((char*)&D, sizeof(D)))
+
+            {
+                    if(searchid==D.getdoctorid())
+                    {
+                        D.showdata();
+                        found1=1;
+                    }
+            }
+
+            if(found1==0)
+                cout<<"No such record found.";
+            f7.close();
+            getch();
+
+}
+
+
+
+//___________________________________________Patients
+class patients
+{
+private:
+char name[20];
+char blood_group[5];
+long pat_id;
+char phn[15];
+char addr[150];
+ public:
+void patientdata();
+void showdata();
+long getpatientid()
+{
+    return pat_id;
+}
+};
+long getpatientid()
+{
+    long n=1;
+    fstream f9("patient.dat",ios::binary|ios::in);
+    patients p;
+    while(f9.read((char*)&p,sizeof(p)))
+        n= p.getpatientid();
+    f9.close();
+    return (n+1);
+
+}
+ void patients::patientdata()
+{
+cout<<" \n\nEnter Details of New Patient";
+pat_id = getpatientid();
+cout<<"\nPatient ID : "<<pat_id;
+cout<<"\nEnter Patient Name : ";
+cin>>name;
+cout<<"\nEnter Patient Blood Group : ";
+gets(blood_group);
+cout<<"\nEnter Patient Phone  : ";
+gets(phn);
+cout<<"\nPatient's Address:";    gets(addr);
+}
+void patients::showdata()
+{
+cout<<"\nPatient ID\t: "<<getpatientid();
+cout<<"\nPatient Name\t: "<<name;
+cout<<"\nBlood Group\t: "<<blood_group;
+cout<<"\nPatient Phone\t: "<<phn;
+cout<<"\nPatient's Address:"<<addr;
+
+cout<<"\n\n";
+}
+void doctor()
+{
+    border();
+    clrscr();
+
+    int ch=0;
+while(ch!=5)
+{
+    clrscr();
+    cout<<"\n\n\t\t\t\t****DOCTOR'S Info MENU****\n";
+    cout<<"\n\t 1 . Enter Doctor Database";
+    cout<<"\n\t 2 . View Doctor Database";
+    cout<<"\n\t 3 . Modify Doctor Database";
+    cout<<"\n\t 4 . Search Doctor Database";
+    cout<<"\n\t 5 . Main Menu ";
+    cout<<"\n\t 6.  Exit";
+    cout<<"\n\n\tEnter your Choice: ";
+    cin>>ch;
+    switch (ch)
+    {
+        case 1:clrscr();
+            new_doctor();
+            break;
+
+        case 2: clrscr();
+            display_doctor();
+             getch();
+            break;
+
+        case 3: clrscr();
+            modify_doctor();
+
+            break;
+
+        case 4: clrscr();
+            search_doctor();
+            break;
+     case 5:    clrscr();
+            mainmenu();
+            break;
+
+    case 6:   clrscr();
+        cout<<"Exiting program...";
+        getch();
+        exit(0);
+        break;
+
+       }
+}
+}
+void new_patient()
+{
+    fstream f;
+     f.open("patient.dat",ios::in|ios::out|ios::ate|ios::app|ios::binary);
+     patients P;
+    P.patientdata();
+    f.write((char *)&P,sizeof(P));
+    getch();
+    f.close();
+}
+void display_patient()
+{
+        cout<<"\n\n";
+        patients P;
+        fstream f1("patient.dat",ios::in|ios::binary);
+        while(f1.read((char*)&P,sizeof(P)))
+        {
+            cout<<endl;
+            P.showdata();
+        }
+        getch();
+        f1.close();
+}
+void search_patient()
+{
+        int found1=0;
+            long searchid;
+            cout<<"Enter Id of the Doctor to be searched:";
+            cin>>searchid;
+
+            fstream f3("patient.dat",ios::in|ios::out|ios::app|ios::binary);
+                        patients P;
+            while(f3.read((char*)&P, sizeof(P)))
+
+            {
+                    if(searchid==P.getpatientid())
+                    {
+                        P.showdata();
+                        found1=1;
+                    }
+            }
+
+            if(found1==0)
+                cout<<"No such record found.";
+            f3.close();
+            getch();
+}
+void modify_patient()
+{
+    int found=0;
+            long modifyid;
+            cout<<"\n\nEnter Id of the Doctor to be modified:";
+            cin>>modifyid;
+            fstream f2("patient.dat",ios::in|ios::out|ios::binary);
+                        patients P;
+            while(f2.read((char*)&P, sizeof(P)))
+            {
+                if(modifyid==P.getpatientid())
+                {
+                    cout<<"Enter New Record.."<<endl;
+                    P.patientdata();
+                    f2.seekp(f2.tellg() - sizeof(P));
+                    f2.write((char*)&P, sizeof(P));
+                    found=1;
+                }
+            }
+            if(found==0)
+                cout<<"No such record found.";
+            getch();
+            f2.close();
+}
+
+void mainmenu()
+{
+    border();
+    int ch1=0;
+     while(ch1!=3)
+    {
+           gotoxy(30,3);   cout<<"MENU";
+           gotoxy(30,4);    cout<<"1.Doctor Data.";
+           gotoxy(30,5);    cout<<"2.Patient Data.";
+           gotoxy(30,6);    cout<<"3.Exit.";
+           gotoxy(30,7);    cout<<"Enter Choice:";
+           gotoxy(30,8);    cin>>ch1;
+        if(ch1==1)
+        {
+            doctor();
+        }
+        else if(ch1==2)
+        {
+            patient();
+        }
+        else if(ch1==3)
+            exit(7);
+    }
+ }
+ void border()
+{
+
+    for(int i=0;i<25;i++)
+    {
+        gotoxy(1,1+i);
+        delay(20);
+        cout<<"*";
+    }
+    for(i=0;i<78;i++)
+    {
+        gotoxy(1+i,25);
+        delay(10);
+        cout<<"*";
+    }
+    for(i=0;i<25;i++)
+    {
+        gotoxy(80,25-i);
+        delay(20);
+        cout<<"*";
+    }
+    for(i=0;i<79;i++)
+    {
+        gotoxy(80-i,1);
+        delay(10);
+        cout<<"*";
+    }
+
+}
+
+
+void patient()
+{
+       border();
+       clrscr();
+       patients P;
+    int ch=0;
+while(ch!=5)
+{           clrscr();
+    cout<<"****MENU****\n";
+    cout<<"\n\t 1 . Enter Patient Database";
+    cout<<"\n\t 2 . View Patient Database";
+    cout<<"\n\t 3 . Modify Patient Database";
+    cout<<"\n\t 4 . Search Patient Database";
+    cout<<"\n\t 5 . Main Menu ";
+    cout<<"\n\t 6.  Exit";
+    cout<<"\n\n\tEnter your Choice:";
+    cin>>ch;
+    switch (ch)
+    {
+        case 1:    clrscr();
+            new_patient();
+
+            break;
+
+        case 2: clrscr();
+            display_patient();
+
+            break;
+
+        case 3: clrscr();
+
+            break;
+
+        case 4: clrscr();
+            search_patient();
+            break;
+
+     case 5:    clrscr();
+            mainmenu();
+            break;
+
+    case 6:   clrscr();
+        cout<<"Exiting program...";
+        getch();
+        exit(0);
+        break;
+
+       }
+}
+    getch();
+}
+void main()
+{
+clrscr();
+patients P;
+doctors D;
+
+
+
+    char ch[7];
+
+       int m=4,n=0;
+    char pass[7]="cs12b";
+    while(n<=5)
+    {
+        cout<<"ENTER PASSWORD: ";
+        for(int i=0;i<5;i++)
+        {
+            ch[i]=getch();
+            cout<<"*";
+        }
+        ch[i]='\0';
+        cout<<endl;
+            getch();
+        if(strcmp(ch,pass)==0)
+        {
+               gotoxy(30,8);cout<<"****WELCOME TO THE PROGRAM****";
+                  getch();
+             clrscr();
+             mainmenu();
+
+        }
+
+        else
+        {
+            n++;
+            if(n==5)
+                break;
+            cout<<"\nINCORRECT PASSWORD\n";
+            cout<<"Number of chances left: "<<m--;
+            cout<<endl;
+        }
+     }
+        if(m==0)
+            exit(0);
+    getch();
+
+
+}
